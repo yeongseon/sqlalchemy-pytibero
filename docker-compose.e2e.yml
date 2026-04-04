@@ -1,0 +1,31 @@
+services:
+  db:
+    image: ${TIBERO_IMAGE:-tiberoofficial/tibero:latest}
+    hostname: ${TIBERO_HOSTNAME:-tibero}
+    ports:
+      - "${TIBERO_PORT:-8629}:8629"
+    environment:
+      TB_ROOT_PASSWORD: ${TIBERO_ROOT_PASSWORD:-tmax}
+      TB_USER: ${TIBERO_USER:-tibero}
+      TB_PASSWORD: ${TIBERO_PASSWORD:-tmax}
+      TB_SID: ${TIBERO_SID:-TIBERO}
+      BOOT_POLICY: auto
+    volumes:
+      - ${TIBERO_LICENSE_FILE:?Set TIBERO_LICENSE_FILE}:/opt/tibero7/license/license.xml:ro
+
+  e2e:
+    build:
+      context: .
+      dockerfile: docker/e2e.Dockerfile
+      args:
+        BASE_IMAGE: ${TIBERO_IMAGE:-tiberoofficial/tibero:latest}
+    depends_on:
+      - db
+    environment:
+      SA_TIBERO_RUN_E2E: "1"
+      SA_TIBERO_HOST: db
+      SA_TIBERO_PORT: "${TIBERO_PORT:-8629}"
+      SA_TIBERO_DATABASE: ${TIBERO_SID:-TIBERO}
+      SA_TIBERO_USER: ${TIBERO_USER:-tibero}
+      SA_TIBERO_PASSWORD: ${TIBERO_PASSWORD:-tmax}
+      SA_TIBERO_DRIVER: ${TIBERO_DRIVER:-Tibero 7 ODBC Driver}

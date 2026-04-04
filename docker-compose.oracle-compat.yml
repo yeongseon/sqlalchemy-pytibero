@@ -1,0 +1,31 @@
+services:
+  oracle-xe:
+    image: gvenzl/oracle-xe:21-slim
+    hostname: oracle-xe
+    ports:
+      - "1521:1521"
+    environment:
+      ORACLE_PASSWORD: OracleTestPwd1
+      APP_USER: testuser
+      APP_USER_PASSWORD: TestUserPwd1
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  oracle-compat:
+    build:
+      context: .
+      dockerfile: docker/oracle-compat.Dockerfile
+    depends_on:
+      oracle-xe:
+        condition: service_healthy
+    environment:
+      SA_ORACLE_COMPAT_RUN: "1"
+      SA_ORACLE_HOST: oracle-xe
+      SA_ORACLE_PORT: "1521"
+      SA_ORACLE_SERVICE: XEPDB1
+      SA_ORACLE_USER: testuser
+      SA_ORACLE_PASSWORD: TestUserPwd1
