@@ -1,0 +1,81 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sqlalchemy-pytibero"
+version = "0.1.0"
+description = "Tibero dialect for SQLAlchemy"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    {name = "Yeongseon Choe", email = "yeongseon.choe@gmail.com"},
+]
+keywords = ["SQLAlchemy", "Tibero", "dialect"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: SQL",
+    "Topic :: Database",
+    "Topic :: Database :: Front-Ends",
+]
+dependencies = [
+    "sqlalchemy>=2.0,<2.2",
+]
+
+[project.optional-dependencies]
+pytibero = ["pytibero"]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+    "ruff==0.15.6",
+]
+
+[project.urls]
+Homepage = "https://github.com/yeongseon/sqlalchemy-pytibero"
+Repository = "https://github.com/yeongseon/sqlalchemy-pytibero"
+Issues = "https://github.com/yeongseon/sqlalchemy-pytibero/issues"
+
+[project.entry-points."sqlalchemy.dialects"]
+tibero = "sqlalchemy_pytibero.dialect:TiberoDialect"
+"tibero.pytibero" = "sqlalchemy_pytibero.dialect:TiberoDialect"
+
+[tool.setuptools]
+packages = ["sqlalchemy_pytibero"]
+include-package-data = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint.isort]
+known-first-party = ["sqlalchemy_pytibero"]
+
+[tool.coverage.run]
+source = ["sqlalchemy_pytibero"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 95
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+addopts = "--tb native -v -r fxX --maxfail=25 -p no:warnings"
+python_files = "test/*test_*.py"
+
+[tool.basedpyright]
+typeCheckingMode = "off"
+reportUnsafeMultipleInheritance = "none"
+reportMissingTypeArgument = "none"
+reportIncompatibleMethodOverride = "none"
+reportAssignmentType = "none"
