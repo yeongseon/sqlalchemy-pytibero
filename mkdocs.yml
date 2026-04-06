@@ -28,6 +28,18 @@ theme:
 
 nav:
   - Home: index.md
+  - Getting Started:
+      - Quick Start: quickstart.md
+      - Connection Guide: connection.md
+  - User Guide:
+      - Dialect Features: dialect-features.md
+      - Type Mapping: types.md
+      - Schema Reflection: reflection.md
+      - DDL Generation: ddl.md
+      - Limitations: limitations.md
+  - Reference:
+      - API Reference: api-reference.md
+  - Development: development.md
 
 markdown_extensions:
   - admonition
