@@ -42,3 +42,6 @@ ENV/
 # IDEs
 .idea/
 .vscode/
+
+# mkdocs documentation
+site/

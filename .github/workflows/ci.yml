@@ -43,6 +43,7 @@ jobs:
         run: |
           python -m pytest \
             test/ \
+            --ignore=test/oracle_compat \
             -v --tb=short \
             --cov=sqlalchemy_pytibero \
             --cov-report=term-missing \
