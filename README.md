@@ -3,6 +3,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/sqlalchemy-pytibero)](https://pypi.org/project/sqlalchemy-pytibero)
 [![CI](https://github.com/yeongseon/sqlalchemy-pytibero/actions/workflows/ci.yml/badge.svg)](https://github.com/yeongseon/sqlalchemy-pytibero/actions/workflows/ci.yml)
 [![license](https://img.shields.io/github/license/yeongseon/sqlalchemy-pytibero)](https://github.com/yeongseon/sqlalchemy-pytibero/blob/main/LICENSE)
+[![docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://yeongseon.github.io/sqlalchemy-pytibero/)
 
 SQLAlchemy 2.0 dialect for the Tibero database, backed by `pytibero`.
 
