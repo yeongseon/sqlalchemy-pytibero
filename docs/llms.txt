@@ -1,0 +1,23 @@
+# sqlalchemy-pytibero
+
+> SQLAlchemy 2.0 dialect for the Tibero database, enabling ORM queries, schema reflection, DDL generation, and Tibero-specific type mappings.
+
+sqlalchemy-pytibero provides a full SQLAlchemy 2.0 dialect for Tibero RDBMS. It supports connection pooling, ORM operations, raw SQL, DDL reflection, and custom type mappings via the pytibero driver. Default connection: `tibero://tibero:@localhost:8629/tibero`.
+
+## Core Documentation
+
+- [Quick Start](https://yeongseon.github.io/sqlalchemy-pytibero/quickstart/): Installation, first ORM model, basic CRUD operations
+- [Connection Guide](https://yeongseon.github.io/sqlalchemy-pytibero/connection/): URL formats, engine options, pooling, timeouts
+- [Dialect Features](https://yeongseon.github.io/sqlalchemy-pytibero/dialect-features/): Tibero-specific SQL features, function support, hints
+- [Type Mapping](https://yeongseon.github.io/sqlalchemy-pytibero/types/): Tibero-to-SQLAlchemy type conversion, custom types
+- [API Reference](https://yeongseon.github.io/sqlalchemy-pytibero/api-reference/): Dialect, compiler, type classes
+
+## Reference
+
+- [Schema Reflection](https://yeongseon.github.io/sqlalchemy-pytibero/reflection/): Table introspection, inspector, metadata reflection
+- [DDL Generation](https://yeongseon.github.io/sqlalchemy-pytibero/ddl/): CREATE TABLE, indexes, constraints, Tibero-specific DDL
+- [Limitations](https://yeongseon.github.io/sqlalchemy-pytibero/limitations/): Known limitations, unsupported features, workarounds
+
+## Optional
+
+- [Development Guide](https://yeongseon.github.io/sqlalchemy-pytibero/development/): Contributing, testing, release process
