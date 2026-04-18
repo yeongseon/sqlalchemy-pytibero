@@ -47,7 +47,11 @@ Reads:
 - `nullable`
 - `data_default`
 
-Type resolution is delegated to `_resolve_column_type(...)` using `ischema_names`.
+Type resolution is delegated to `_resolve_column_type(...)` using `ischema_names`. Parameterized types
+like `VARCHAR2(100)` or `NUMBER(10,2)` are parsed via regex to extract base type and precision/scale.
+
+Column defaults are normalized by `_normalize_default()` which strips vendor-specific quoting
+(e.g., `'value'` → `value`, `NULL` → `None`).
 
 Example:
 

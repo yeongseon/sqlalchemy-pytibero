@@ -62,3 +62,23 @@ flowchart LR
 
 !!! warning "Identity condition is strict"
     Identity SQL is only emitted for SQLAlchemy's detected autoincrement column with no explicit server default.
+
+## Alembic Migration Support
+
+This dialect ships with an Alembic `DDLImpl` registered via `alembic.ddl` entry point. After installing
+`sqlalchemy-pytibero`, Alembic migrations work automatically.
+
+**Key behavior:** `transactional_ddl = False` — Tibero auto-commits DDL statements, so Alembic will not
+wrap migrations in a transaction.
+
+```ini
+# alembic.ini
+sqlalchemy.url = tibero://tibero:password@localhost:8629/TESTDB
+```
+
+```bash
+alembic upgrade head
+```
+
+!!! note "Install Alembic extra"
+    `pip install "sqlalchemy-pytibero[alembic]"` to pull in Alembic as a dependency.

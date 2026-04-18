@@ -77,3 +77,8 @@ flowchart LR
 
 !!! tip "Comments are out-of-line"
     Comments are emitted via separate `COMMENT ON ...` statements because `inline_comments` is disabled.
+
+## Alembic integration
+
+An Alembic `DDLImpl` is registered via the `alembic.ddl` entry point (`tibero`).
+`transactional_ddl = False` because Tibero auto-commits DDL.
