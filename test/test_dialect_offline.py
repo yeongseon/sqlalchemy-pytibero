@@ -10,7 +10,7 @@ import pytest
 from sqlalchemy.engine import url
 
 from sqlalchemy_pytibero.base import TiberoExecutionContext
-from sqlalchemy_pytibero.dialect import TiberoDialect
+from sqlalchemy_pytibero.dialect import TiberoDialect, _normalize_default
 
 
 def _invoke_reflection(dialect, method_name, connection, *args, **kwargs):
@@ -151,16 +151,53 @@ class TestReflectionMethods:
         conn.dialect_options = {}
         conn.execute.return_value = [
             ("ID", "NUMBER", None, 10, 0, "N", None, 1),
-            ("NAME", "VARCHAR2", 100, None, None, "Y", "'x'", 2),
+            ("NAME", "VARCHAR2(100)", 100, None, None, "Y", "'x'", 2),
             ("FLAG", "MYSTERY", None, None, None, "Y", None, 3),
         ]
         with patch("sqlalchemy.util.warn", create=True) as warn:
             cols = _invoke_reflection(d, "get_columns", conn, "USERS", schema="APP")
         assert cols[0]["name"] == "ID"
         assert cols[0]["nullable"] is False
-        assert cols[1]["type"].length == 100
+        assert cols[0]["default"] is None
+        assert cols[1]["type"].__class__.__name__ == "VARCHAR2"
+        assert cols[1]["default"] == "x"
         assert cols[2]["type"].__class__.__name__ == "NullType"
         warn.assert_called_once()
+
+    @pytest.mark.parametrize(
+        ("raw_default", "expected"),
+        [
+            (None, None),
+            ("", None),
+            ("NULL", None),
+            (" SYSDATE ", "SYSDATE"),
+            ("(1)", "1"),
+            ("'hello'", "hello"),
+            ("0", "0"),
+            ("USER", "USER"),
+            ("SYS_GUID()", "SYS_GUID()"),
+            ("seq_users.NEXTVAL", "seq_users.NEXTVAL"),
+        ],
+    )
+    def test_normalize_default(self, raw_default, expected):
+        assert _normalize_default(raw_default) == expected
+
+    def test_get_columns_normalizes_defaults(self):
+        d = TiberoDialect()
+        conn = MagicMock()
+        conn.info_cache = {}
+        conn.dialect_options = {}
+        conn.execute.return_value = [
+            ("C1", "DATE", None, None, None, "Y", " SYSDATE \n", 1),
+            ("C2", "NUMBER", None, 10, 0, "Y", "(1)", 2),
+            ("C3", "VARCHAR2", 20, None, None, "Y", "'hello'", 3),
+            ("C4", "VARCHAR2", 20, None, None, "Y", "NULL", 4),
+            ("C5", "VARCHAR2", 20, None, None, "Y", "USER", 5),
+        ]
+
+        cols = _invoke_reflection(d, "get_columns", conn, "USERS", schema="APP")
+
+        assert [col["default"] for col in cols] == ["SYSDATE", "1", "hello", None, "USER"]
 
     def test_row_get_and_effective_schema_and_type_resolution_helpers(self):
         d = TiberoDialect()

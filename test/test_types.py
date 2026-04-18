@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from sqlalchemy.sql import sqltypes
 
+from sqlalchemy_pytibero.dialect import TiberoDialect
 from sqlalchemy_pytibero.types import (
     BIGINT,
     BINARY_DOUBLE,
@@ -104,3 +105,19 @@ class TestRepr:
 class TestBindProcessor:
     def test_float_bind_processor_returns_none(self):
         assert FLOAT().bind_processor(None) is None
+
+
+class TestDialectTypeResolution:
+    def test_ischema_name_synonyms_map_to_expected_types(self):
+        assert TiberoDialect.ischema_names["LONG VARCHAR"] is VARCHAR2
+        assert TiberoDialect.ischema_names["TIMESTAMP WITH TIME ZONE"] is TIMESTAMP
+        assert TiberoDialect.ischema_names["TIMESTAMP WITH LOCAL TIME ZONE"] is TIMESTAMP
+
+    def test_resolve_timestamp_variants(self):
+        dialect = TiberoDialect()
+
+        resolved = dialect._resolve_column_type("TIMESTAMP WITH TIME ZONE", None, None, None)
+        assert isinstance(resolved, TIMESTAMP)
+
+        resolved = dialect._resolve_column_type("TIMESTAMP WITH LOCAL TIME ZONE", None, None, None)
+        assert isinstance(resolved, TIMESTAMP)
