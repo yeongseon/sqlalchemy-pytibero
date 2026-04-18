@@ -4,7 +4,7 @@ import pytest
 
 alembic = pytest.importorskip("alembic", reason="alembic not installed")
 
-from sqlalchemy_pytibero.alembic_impl import TiberoImpl
+from sqlalchemy_pytibero.alembic_impl import TiberoImpl  # noqa: E402
 
 
 class TestTiberoAlembicImpl:
