@@ -70,6 +70,7 @@ known-first-party = ["sqlalchemy_pytibero"]
 
 [tool.coverage.run]
 source = ["sqlalchemy_pytibero"]
+omit = ["sqlalchemy_pytibero/aioodbc.py"]
 
 [tool.coverage.report]
 show_missing = true
