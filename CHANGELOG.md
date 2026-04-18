@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
 
 - Added `aioodbc` async dialect (`tibero+aioodbc://`) using SQLAlchemy's built-in `aiodbcConnector` (#14)
 
