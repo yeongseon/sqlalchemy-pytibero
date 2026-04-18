@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Added `aioodbc` async dialect (`tibero+aioodbc://`) using SQLAlchemy's built-in `aiodbcConnector` (#14)
+
 ## 0.2.0
 
 - Improved `_resolve_column_type` to use regex-based type parsing for parameterized types

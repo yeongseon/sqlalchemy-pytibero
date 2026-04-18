@@ -89,6 +89,29 @@ with Session(engine) as session:
     session.commit()
 ```
 
+## Async example
+
+Install with async support:
+
+```bash
+pip install "sqlalchemy-pytibero[aioodbc]"
+```
+
+```python
+import asyncio
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import create_async_engine
+
+async def main():
+    engine = create_async_engine("tibero+aioodbc://tibero:password@localhost:8629/TESTDB")
+    async with engine.begin() as conn:
+        result = await conn.execute(text("SELECT 1 FROM DUAL"))
+        print(result.scalar())
+    await engine.dispose()
+
+asyncio.run(main())
+```
+
 ## Architecture
 
 ```mermaid

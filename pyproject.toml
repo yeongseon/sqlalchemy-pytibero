@@ -30,12 +30,13 @@ classifiers = [
     "Topic :: Database :: Front-Ends",
 ]
 dependencies = [
-    "sqlalchemy>=2.0,<2.2",
+    "sqlalchemy>=2.0.23,<2.2",
 ]
 
 [project.optional-dependencies]
 pytibero = ["pytibero"]
 alembic = ["alembic"]
+aioodbc = ["aioodbc>=0.5.0"]
 dev = [
     "pytest>=7.0",
     "pytest-cov",
@@ -51,6 +52,7 @@ Issues = "https://github.com/yeongseon/sqlalchemy-pytibero/issues"
 [project.entry-points."sqlalchemy.dialects"]
 tibero = "sqlalchemy_pytibero.dialect:TiberoDialect"
 "tibero.pytibero" = "sqlalchemy_pytibero.dialect:TiberoDialect"
+"tibero.aioodbc" = "sqlalchemy_pytibero.aioodbc:TiberoDialectAsync_aioodbc"
 
 [project.entry-points."alembic.ddl"]
 tibero = "sqlalchemy_pytibero.alembic_impl:TiberoImpl"

@@ -64,6 +64,35 @@ flowchart TD
     c --> db[Tibero Session]
 ```
 
+## Async connection (aioodbc)
+
+Install the async extra:
+
+```bash
+pip install "sqlalchemy-pytibero[aioodbc]"
+```
+
+Use `create_async_engine` with the `tibero+aioodbc://` URL scheme:
+
+```python
+from sqlalchemy.ext.asyncio import create_async_engine
+
+engine = create_async_engine(
+    "tibero+aioodbc://tibero:password@localhost:8629/TESTDB",
+    echo=True,
+)
+
+async with engine.begin() as conn:
+    result = await conn.execute(text("SELECT 1 FROM DUAL"))
+    print(result.scalar())
+```
+
+The async dialect builds an ODBC DSN string internally. You can override the ODBC driver name via the `driver` query parameter:
+
+```text
+tibero+aioodbc://user:pass@host:port/db?driver=Tibero%207%20ODBC%20Driver
+```
+
 !!! warning "Isolation level validation"
     `set_isolation_level()` only accepts `READ COMMITTED` and `SERIALIZABLE`. Any other value raises `ValueError`.
 
