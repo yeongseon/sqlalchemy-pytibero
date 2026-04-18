@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sqlalchemy-pytibero"
-version = "0.1.0"
+version = "0.2.0"
 description = "Tibero dialect for SQLAlchemy"
 readme = "README.md"
 license = "MIT"
@@ -35,6 +35,7 @@ dependencies = [
 
 [project.optional-dependencies]
 pytibero = ["pytibero"]
+alembic = ["alembic"]
 dev = [
     "pytest>=7.0",
     "pytest-cov",
@@ -49,6 +50,9 @@ Issues = "https://github.com/yeongseon/sqlalchemy-pytibero/issues"
 [project.entry-points."sqlalchemy.dialects"]
 tibero = "sqlalchemy_pytibero.dialect:TiberoDialect"
 "tibero.pytibero" = "sqlalchemy_pytibero.dialect:TiberoDialect"
+
+[project.entry-points."alembic.ddl"]
+tibero = "sqlalchemy_pytibero.alembic_impl:TiberoImpl"
 
 [tool.setuptools]
 packages = ["sqlalchemy_pytibero"]

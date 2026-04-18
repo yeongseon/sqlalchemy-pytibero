@@ -42,6 +42,43 @@ _RE_LENGTH = re.compile(r"\((\d+)\)")
 _RE_PRECISION_SCALE = re.compile(r"\((\d+)(?:\s*,\s*(\d+))?\)")
 _RE_VERSION = re.compile(r"(\d+)\.(\d+)(?:\.(\d+))?(?:\.(\d+))?")
 
+
+def _normalize_default(raw_default):
+    if raw_default is None:
+        return None
+
+    value = str(raw_default).strip()
+    if not value or value.upper() == "NULL":
+        return None
+
+    def _has_wrapping_parentheses(expr):
+        if len(expr) < 2 or expr[0] != "(" or expr[-1] != ")":
+            return False
+
+        depth = 0
+        for index, char in enumerate(expr):
+            if char == "(":
+                depth += 1
+            elif char == ")":
+                depth -= 1
+                if depth == 0 and index != len(expr) - 1:
+                    return False
+            if depth < 0:
+                return False
+        return depth == 0
+
+    while _has_wrapping_parentheses(value):
+        value = value[1:-1].strip()
+
+    if len(value) >= 2 and value[0] == "'" and value[-1] == "'":
+        value = value[1:-1]
+
+    value = value.strip()
+    if not value or value.upper() == "NULL":
+        return None
+    return value
+
+
 colspecs = {
     sqltypes.Numeric: NUMERIC,
     sqltypes.Float: FLOAT,
@@ -61,6 +98,7 @@ ischema_names = {
     "BIGINT": BIGINT,
     "VARCHAR2": VARCHAR2,
     "VARCHAR": VARCHAR2,
+    "LONG VARCHAR": VARCHAR2,
     "CHAR": CHAR,
     "NCHAR": NCHAR,
     "NVARCHAR2": NVARCHAR2,
@@ -69,6 +107,8 @@ ischema_names = {
     "BLOB": BLOB,
     "DATE": DATE,
     "TIMESTAMP": TIMESTAMP,
+    "TIMESTAMP WITH TIME ZONE": TIMESTAMP,
+    "TIMESTAMP WITH LOCAL TIME ZONE": TIMESTAMP,
     "RAW": RAW,
     "LONG RAW": LONG_RAW,
     "LONG": LONG,
@@ -302,24 +342,48 @@ class TiberoDialect(default.DefaultDialect):
                     "name": col_name,
                     "type": coltype,
                     "nullable": nullable,
-                    "default": data_default,
+                    "default": _normalize_default(data_default),
                     "autoincrement": False,
                 }
             )
         return columns
 
     def _resolve_column_type(self, data_type, data_length, data_precision, data_scale):
-        type_cls = self.ischema_names.get(data_type)
+        data_type = str(data_type).upper().strip()
+
+        length_match = _RE_LENGTH.search(data_type)
+        precision_match = _RE_PRECISION_SCALE.search(data_type)
+        base_match = _RE_TYPE_BASE.search(data_type)
+        base_type = base_match.group(1).strip() if base_match else data_type
+
+        type_cls = self.ischema_names.get(base_type)
         if type_cls is None:
             util.warn(f"Did not recognize type '{data_type}'")
             return sqltypes.NULLTYPE
 
-        if data_type in {"VARCHAR2", "NVARCHAR2", "CHAR", "NCHAR", "RAW"}:
-            return type_cls(length=data_length) if data_length is not None else type_cls()
+        if base_type in {"VARCHAR2", "NVARCHAR2", "CHAR", "NCHAR", "RAW"}:
+            if length_match:
+                return type_cls(length=int(length_match.group(1)))
+            if data_length is not None:
+                return type_cls(length=data_length)
+            return type_cls()
 
-        if data_type in {"NUMBER", "NUMERIC", "DECIMAL", "FLOAT"}:
+        if base_type in {"NUMBER", "NUMERIC", "DECIMAL"}:
+            if precision_match:
+                precision = int(precision_match.group(1))
+                scale = precision_match.group(2)
+                if scale is not None:
+                    return type_cls(precision=precision, scale=int(scale))
+                return type_cls(precision=precision)
             if data_precision is not None and data_scale is not None:
                 return type_cls(precision=int(data_precision), scale=int(data_scale))
+            if data_precision is not None:
+                return type_cls(precision=int(data_precision))
+            return type_cls()
+
+        if base_type == "FLOAT":
+            if precision_match:
+                return type_cls(precision=int(precision_match.group(1)))
             if data_precision is not None:
                 return type_cls(precision=int(data_precision))
             return type_cls()

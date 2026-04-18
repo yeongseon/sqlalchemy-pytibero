@@ -31,6 +31,22 @@ with engine.connect() as conn:
     print(value)
 ```
 
+## Alembic Support
+
+This dialect includes an Alembic implementation. After installing, Alembic
+migrations work out of the box:
+
+```ini
+# alembic.ini
+sqlalchemy.url = tibero://tibero:password@localhost:8629/TESTDB
+```
+
+```bash
+alembic upgrade head
+```
+
+Note: Tibero DDL is auto-committed, so `transactional_ddl = False`.
+
 ## Architecture
 
 ```mermaid
